@@ -48,4 +48,4 @@
       - "{{ evilginx2_dir }}/templates:/templates"
     networks:
       - name: "{{ evilginx2_docker_network }}"
-    purge_networks: true
+    networks_cli_compatible: yes
