@@ -1,6 +1,6 @@
 galaxy_info:
   role_name: evilginx2_docker
-  author: warhorse
+  author: almart
   description: Installs Evilginx2 in Docker
   company: Warhorse
 
