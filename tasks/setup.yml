@@ -1,4 +1,4 @@
-- name: 'setup : create evilginx2 network'
+- name: setup : create evilginx2 network
   become: true
   community.docker.docker_network:
     name: "{{ evilginx2_docker_network }}"
@@ -8,3 +8,34 @@
       - subnet: "{{ evilginx2_network_ipam_subnet }}"
         gateway: "{{ evilginx2_network_ipam_gateway }}"
         iprange: "{{ evilginx2_network_ipam_iprange }}"
+
+- name: setup : enable IPv4 forwarding
+  become: true
+  ansible.builtin.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
+
+- name: deploy : evilginx2 container
+  become: true
+  community.docker.docker_container:
+    name: evilginx2
+    image: ghcr.io/almart/docker-evilginx2:latest
+    restart_policy: always
+    # give it full host-network access so iptables/raw sockets work
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - /opt/docker/evilginx2/config:/config:rw
+      - /opt/docker/evilginx2/phishlets:/phishlets:rw
+      - /opt/docker/evilginx2/templates:/templates:rw
+    entrypoint: /bin/evilginx
+    command: >-
+      -p /phishlets
+      -c /config
+      -t /templates
+      -debug
+      -developer
