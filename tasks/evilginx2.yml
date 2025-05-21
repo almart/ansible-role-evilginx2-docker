@@ -37,6 +37,7 @@
     image: "{{ evilginx2_docker_image }}"
     pull: yes
     state: started
+    privileged: yes
     entrypoint: "{{ evilginx2_entry_point }}"
     published_ports: "{{ evilginx2_ports }}"
     labels: '{{ evilginx2_docker_labels }}'
