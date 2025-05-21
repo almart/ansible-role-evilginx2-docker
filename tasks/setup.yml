@@ -1,4 +1,4 @@
- name: 'setup : create evilginx2 network'
+- name: 'setup : create evilginx2 network'
   become: true
   community.docker.docker_network:
     name: "{{ evilginx2_docker_network }}"
