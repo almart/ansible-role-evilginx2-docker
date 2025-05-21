@@ -36,14 +36,6 @@
     state: present
     reload: yes
 
-- name: add NAT masquerade for evilginx2 subnet
-  ansible.builtin.iptables:
-    table: nat
-    chain: POSTROUTING
-    source: "{{ evilginx2_network_ipam_subnet }}"
-    jump: MASQUERADE
-    state: present
-
 - name: Evilginx2
   docker_container:
     name: "{{ evilginx2_container_name }}"
