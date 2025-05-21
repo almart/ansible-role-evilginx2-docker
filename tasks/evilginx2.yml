@@ -28,13 +28,6 @@
     mode: 777
   notify:
      - restart evilginx2
-     
-- name: enable IPv4 forwarding
-  ansible.builtin.sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
-    state: present
-    reload: yes
 
 - name: Evilginx2
   docker_container:
