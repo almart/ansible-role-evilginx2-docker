@@ -1,15 +1,16 @@
+---
 - name: setup : create evilginx2 network
   become: true
   community.docker.docker_network:
     name: "{{ evilginx2_docker_network }}"
-    state: present
     driver: bridge
+    state: present
     ipam_config:
       - subnet: "{{ evilginx2_network_ipam_subnet }}"
         gateway: "{{ evilginx2_network_ipam_gateway }}"
         iprange: "{{ evilginx2_network_ipam_iprange }}"
 
-- name: setup : enable IPv4 forwarding
+- name: setup : enable IPv4 forwarding on host
   become: true
   ansible.builtin.sysctl:
     name: net.ipv4.ip_forward
@@ -17,21 +18,32 @@
     state: present
     reload: yes
 
-- name: deploy : evilginx2 container
+- name: deploy : evilginx2 container (bridge networking)
   become: true
   community.docker.docker_container:
     name: evilginx2
     image: ghcr.io/almart/docker-evilginx2:latest
     restart_policy: always
-    # give it full host-network access so iptables/raw sockets work
-    network_mode: host
+
+    # Attach to your custom bridge instead of `host`
+    networks:
+      - name: "{{ evilginx2_docker_network }}"
+
+    # Expose the ports you need
+    published_ports:
+      - "80:80"
+      - "443:443"
+
+    # Grant the container the ability to set up iptables + raw sockets
     cap_add:
       - NET_ADMIN
       - NET_RAW
+
     volumes:
       - /opt/docker/evilginx2/config:/config:rw
       - /opt/docker/evilginx2/phishlets:/phishlets:rw
       - /opt/docker/evilginx2/templates:/templates:rw
+
     entrypoint: /bin/evilginx
     command: >-
       -p /phishlets
