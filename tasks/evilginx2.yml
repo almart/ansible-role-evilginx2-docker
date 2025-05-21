@@ -28,6 +28,21 @@
     mode: 777
   notify:
      - restart evilginx2
+     
+- name: enable IPv4 forwarding
+  ansible.builtin.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
+
+- name: add NAT masquerade for evilginx2 subnet
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    source: "{{ evilginx2_network_ipam_subnet }}"
+    jump: MASQUERADE
+    state: present
 
 - name: Evilginx2
   docker_container:
@@ -49,3 +64,6 @@
     networks:
       - name: "{{ evilginx2_docker_network }}"
     networks_cli_compatible: yes
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
