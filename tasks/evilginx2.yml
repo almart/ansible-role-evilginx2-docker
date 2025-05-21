@@ -49,6 +49,3 @@
     networks:
       - name: "{{ evilginx2_docker_network }}"
     networks_cli_compatible: yes
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
